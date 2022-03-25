@@ -24,7 +24,7 @@ export class FrutaService {
 
     async updateFruta( parmas:{
         where: Prisma.FrutaWhereUniqueInput,
-        data: Prisma.FrutaUpdateArgs
+        data: Prisma.FrutaUpdateInput
     } ): Promise<Fruta> {
         const { where, data } = parmas;
         return this.prismaService.fruta.update( {
