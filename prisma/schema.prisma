@@ -11,27 +11,25 @@ datasource db {
 }
 
 model Balde {
-  id Int @default(autoincrement()) @id
-  nome String
-  capacidade Int
-  baldeFrutas BaldeFruta[]
+  nome String @unique @id
+  capacidade Int @default(0)
 }
 
 model Fruta {
-  id Int @default(autoincrement()) @id
-  nome String
-  preco Decimal
+  nome String @unique @id
+  preco Decimal @default(0)
   expiracao Int
-  baldeFrutas BaldeFruta[]
 }
 
 model BaldeFruta {
-  id Int @default(autoincrement()) @id
-  quantidadeFruta Int
-  precoUnitario Decimal
-  precoTotal Decimal
-  baldeId Int
-  balde Balde @relation(fields: [baldeId], references: [id])
-  frutaId Int
-  fruta Fruta @relation(fields: [frutaId], references: [id])
+  id String @unique
+  balde String
+  fruta String
+  @@id([balde, fruta])
+}
+
+model ResumoBalda {
+  total Decimal @default(0)
+  ocupacao Int @default(0)
+  balde String @id @unique
 }

@@ -19,10 +19,14 @@ export class BaldeFrutaService {
         } )
     }
 
-    async getBaldeFrutas( baldeId: number ): Promise<BaldeFruta[]> {
+    async getBaldeFrutas(balde: string): Promise<BaldeFruta[]> {
         return this.prismaService.baldeFruta.findMany({
             where: {
-                baldeId: baldeId
+                AND: [
+                    {
+                        balde: balde
+                    }
+                ]
             },
         });
     }

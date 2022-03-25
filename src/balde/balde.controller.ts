@@ -12,9 +12,9 @@ export class BaldeController {
         return this.baldeService.getBaldes();
     }
 
-    @Get(':id')
-    async getBaldeById(@Param('id') id: string ): Promise<Balde> {
-        return this.baldeService.getBalde( {id: Number(id)} );
+    @Get(':nome')
+    async getBaldeById(@Param('nome') nome: string ): Promise<Balde> {
+        return this.baldeService.getBalde( { nome: nome } );
     }
 
     @Post()
@@ -26,11 +26,11 @@ export class BaldeController {
         } )
     }
 
-    @Put(':id')
-    async updateBalde(@Param('id') id: string, @Body() baldeData: { nome: string, capacidade: number  } ): Promise<Balde> {
+    @Put(':nome')
+    async updateBalde(@Param('nome') id: string, @Body() baldeData: { nome: string, capacidade: number  } ): Promise<Balde> {
         const { nome, capacidade } = baldeData;
         return this.baldeService.updateBalde({
-            where: { id: Number(id) },
+            where: { nome: nome },
             data: {
                 nome,
                 capacidade
@@ -38,8 +38,8 @@ export class BaldeController {
         })
     }
 
-    @Delete(':id')
-    async deleteBalde(@Param('id') id: string): Promise<Balde> {
-        return this.baldeService.deleteBalde( { id: Number(id) } )
+    @Delete(':nome')
+    async deleteBalde(@Param('nome') nome: string): Promise<Balde> {
+        return this.baldeService.deleteBalde( { nome: nome } )
     }
 }
