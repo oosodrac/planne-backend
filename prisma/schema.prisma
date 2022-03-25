@@ -14,7 +14,7 @@ model Balde {
   id Int @default(autoincrement()) @id
   nome String
   capacidade Int
-  frutas Fruta[]
+  baldeFrutas BaldeFruta[]
 }
 
 model Fruta {
@@ -22,6 +22,16 @@ model Fruta {
   nome String
   preco Decimal
   expiracao Int
-  balde Balde @relation(fields: [baldeId], references: [id] )
+  baldeFrutas BaldeFruta[]
+}
+
+model BaldeFruta {
+  id Int @default(autoincrement()) @id
+  quantidadeFruta Int
+  precoUnitario Decimal
+  precoTotal Decimal
   baldeId Int
+  balde Balde @relation(fields: [baldeId], references: [id])
+  frutaId Int
+  fruta Fruta @relation(fields: [frutaId], references: [id])
 }
