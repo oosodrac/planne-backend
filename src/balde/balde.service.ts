@@ -7,6 +7,10 @@ import { PrismaService } from './../prisma.service';
 export class BaldeService {
   constructor(private prismaService: PrismaService) {}
 
+  async getBaldes(): Promise<Balde[]> {
+      return this.prismaService.balde.findMany();
+  }
+
   async getBalde(id: Prisma.BaldeWhereUniqueInput): Promise<Balde | null> {
     return this.prismaService.balde.findUnique({
       where: id,
