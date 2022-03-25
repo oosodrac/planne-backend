@@ -4,9 +4,10 @@ import { AppService } from './app.service';
 import { PrismaService } from './prisma.service';
 import { BaldeService } from './balde/balde.service';
 import { BaldeController } from './balde/balde.controller';
+import { FrutaModule } from './fruta/fruta.module';
 
 @Module({
-  imports: [],
+  imports: [FrutaModule],
   controllers: [AppController, BaldeController],
   providers: [AppService, PrismaService, BaldeService],
 })
