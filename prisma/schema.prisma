@@ -15,3 +15,10 @@ model Balde {
   nome String
   capacidade Int
 }
+
+model Fruta {
+  id Int @default(autoincrement()) @id
+  nome String
+  preco Decimal
+  expiracao Int
+}
