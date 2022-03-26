@@ -1,19 +1,21 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { Balde, Prisma } from '@prisma/client';
+import { BaldeFrutaService } from 'src/balde-fruta/balde-fruta.service';
 import { PrismaService } from './../prisma.service';
+import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class BaldeService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService, private baldeFrutaService: BaldeFrutaService) {}
 
   async getBaldes(): Promise<Balde[]> {
       return this.prismaService.balde.findMany();
   }
 
-  async getBalde(id: Prisma.BaldeWhereUniqueInput): Promise<Balde | null> {
+  async getBalde(nome: Prisma.BaldeWhereUniqueInput): Promise<Balde | null> {
     return this.prismaService.balde.findUnique({
-      where: id,
+      where: nome,
     });
   }
 
@@ -35,9 +37,18 @@ export class BaldeService {
   }
 
   async deleteBalde(where: Prisma.BaldeWhereUniqueInput): Promise<Balde> {
-      return this.prismaService.balde.delete({
-          where,
-      })
+      let result;
+    this.baldeFrutaService.getResumoByBaldeName( where.nome ).then( resumo => {
+        if ( Number(resumo.ocupacao) !== Number(0) ) {
+            throw new NotFoundException("O balde contem frutas");
+        } else {
+            result = this.prismaService.balde.delete({
+                where,
+            })
+        }
+    } )
+
+      return result;
   }
 
 
