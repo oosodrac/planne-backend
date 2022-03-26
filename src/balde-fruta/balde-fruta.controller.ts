@@ -1,32 +1,103 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param } from '@nestjs/common';
 import { BaldeFrutaService } from './balde-fruta.service';
 import { Post } from '@nestjs/common';
-import { BaldeFruta } from '@prisma/client';
+import { BaldeFruta, ResumoBalda } from '@prisma/client';
+import { BaldeService } from './../balde/balde.service';
+import { FrutaService } from './../fruta/fruta.service';
 
 @Controller('api/v1/balde-frutas')
 export class BaldeFrutaController {
-    constructor(private baldeFrutaService: BaldeFrutaService) { }
+    constructor(private baldeFrutaService: BaldeFrutaService, private baldeService: BaldeService,
+         private frutaService: FrutaService ) { }
 
     @Post()
     async depositarFrutaBalde(@Body() dataBaldeFruta: {
         balde: string
         fruta: string
     }): Promise<BaldeFruta> {
+        let resultado;
         const { balde, fruta } = dataBaldeFruta;
         const id = balde.concat(fruta);
 
-        return this.baldeFrutaService.addFrutaToBalde({
+        const baldeResult = (await this.baldeService.getBalde( { nome: balde } ));
+        const frutaResult = (await this.frutaService.getFruta( {nome: fruta} ));
+
+        if ( baldeResult != null && frutaResult != null ) {
+
+            this.baldeFrutaService.getResumoByBaldeName( balde ).then( resumo => {
+                if ( Number(resumo.ocupacao) === Number(100) ) {
+                    throw new NotFoundException("O Balde está cheio");
+                } else {
+                   resultado = this.addFrutaBalde( balde, fruta, id, frutaResult, baldeResult );
+                }
+            } )
+            
+        } 
+        else {
+            throw new NotFoundException("Fruta ou Balde não existem");
+        }
+
+        return resultado;
+    }
+
+    private addFrutaBalde(balde, fruta, id, frutaResult, baldeResult) {
+        let resultado;
+        this.baldeFrutaService.addFrutaToBalde({
             balde,
             fruta,
             id: id
-        })
+        }).then( (result) => {
+            console.log( 'Result', result );
+            this.baldeFrutaService.getResumoByBaldeName( balde ).then( async resumo => {
+                console.log( 'Resumo', resumo );
+                if ( resumo === null ) {
+                    console.log( 'Balde não existe' );
+                    const total = Number(frutaResult.preco);
+                    const ocupacao = (100 / baldeResult.capacidade);
+    
+                    await this.baldeFrutaService.createResumoBaldeFruta( {
+                        total,
+                        balde,
+                        ocupacao
+                    } );
+    
+                } else {
+                    console.log( 'Balde ja existe' );
+                    const total = Number(resumo.total) + Number(frutaResult.preco);
+                    const ocupacao = Number((100 / baldeResult.capacidade)) + Number(resumo.ocupacao);
+    
+                    await this.baldeFrutaService.updateResumoBaldeFruta( {
+                        where: { balde: balde },
+                        data: {
+                            total,
+                            balde,
+                            ocupacao
+                        }
+                    } );
+                }
+            } );
+
+            resultado = result;
+        } );
+
+        return resultado;
     }
 
-    @Get(':balde/:fruta')
-    async getFrutasFromBalde(@Param('balde') balde: string, @Param('fruta') fruta: string ): Promise<BaldeFruta[]> {
+    @Get()
+    async getFrutasFromBalde(): Promise<BaldeFruta[]> {
+        return this.baldeFrutaService.getBaldeFrutas();
+    }
+
+    @Delete(':balde/:fruta')
+    async deleteFrutaFromBalde( @Param('balde') balde: string, @Param('fruta') fruta: string ): Promise<BaldeFruta> {
         const id = balde.concat(fruta);
-        return this.baldeFrutaService.getBaldeFrutas(id);
+        return this.baldeFrutaService.removeFrutaFromBalde( { id: id } );
+    }
+
+    @Get('resumo')
+    async getResumoBaldeFruta(): Promise<ResumoBalda[]> {
+        return this.baldeFrutaService.getResumoBaldeFruta();
     }
 }

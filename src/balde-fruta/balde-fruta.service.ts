@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './../prisma.service';
-import { BaldeFruta, Prisma } from '@prisma/client';
+import { BaldeFruta, Prisma, ResumoBalda } from '@prisma/client';
 
 @Injectable()
 export class BaldeFrutaService {
@@ -19,15 +19,41 @@ export class BaldeFrutaService {
         } )
     }
 
-    async getBaldeFrutas(balde: string): Promise<BaldeFruta[]> {
-        return this.prismaService.baldeFruta.findMany({
+    async getBaldeFrutas(): Promise<BaldeFruta[]> {
+        return this.prismaService.baldeFruta.findMany({});
+    }
+
+    async createResumoBaldeFruta( data: Prisma.ResumoBaldaCreateInput ): Promise<ResumoBalda> {
+        return this.prismaService.resumoBalda.create( { data, } )
+    }
+
+    async updateResumoBaldeFruta( 
+        params: {
+            where: Prisma.ResumoBaldaWhereUniqueInput
+            data: Prisma.ResumoBaldaUpdateInput
+        }
+     ): Promise<ResumoBalda> {
+        const { where, data } = params;
+        return this.prismaService.resumoBalda.update( { data, where } )
+    }
+
+    async getResumoByBaldeName( balde: string ): Promise<ResumoBalda> {
+        return this.prismaService.resumoBalda.findFirst( {
             where: {
-                AND: [
+                balde: balde
+            }
+        } );
+    }
+
+    async getResumoBaldeFruta(): Promise<ResumoBalda[]> {
+        return this.prismaService.resumoBalda.findMany(
+            {
+                orderBy: [
                     {
-                        balde: balde
+                        ocupacao: 'desc'
                     }
                 ]
-            },
-        });
+            }
+        );
     }
 }
