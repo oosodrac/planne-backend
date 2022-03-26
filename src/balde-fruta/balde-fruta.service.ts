@@ -19,6 +19,15 @@ export class BaldeFrutaService {
         } )
     }
 
+    // async removeFrutaFromBalde( balde: string, fruta: string ): Promise<BaldeFruta> {
+    //     const id = balde.concat(fruta);
+    //     return this.prismaService.baldeFruta.delete( {
+    //         where: {
+    //             id: id
+    //         }
+    //     } )
+    // }
+
     async getBaldeFrutas(): Promise<BaldeFruta[]> {
         return this.prismaService.baldeFruta.findMany({});
     }

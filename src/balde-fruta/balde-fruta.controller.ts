@@ -24,20 +24,19 @@ export class BaldeFrutaController {
         const baldeResult = (await this.baldeService.getBalde( { nome: balde } ));
         const frutaResult = (await this.frutaService.getFruta( {nome: fruta} ));
 
-        if ( baldeResult != null && frutaResult != null ) {
-
+        // if ( baldeResult == null || frutaResult == null ) {
+        //     throw new NotFoundException("Fruta ou Balde não existem");
+        // } 
+        // else {
             this.baldeFrutaService.getResumoByBaldeName( balde ).then( resumo => {
-                if ( Number(resumo.ocupacao) === Number(100) ) {
+
+                if ( resumo === null || resumo ) {
+                    resultado = this.addFrutaBalde( balde, fruta, id, frutaResult, baldeResult );
+                } else if ( Number(resumo.ocupacao) === Number(100) ) {
                     throw new NotFoundException("O Balde está cheio");
-                } else {
-                   resultado = this.addFrutaBalde( balde, fruta, id, frutaResult, baldeResult );
                 }
             } )
-            
-        } 
-        else {
-            throw new NotFoundException("Fruta ou Balde não existem");
-        }
+        // }
 
         return resultado;
     }

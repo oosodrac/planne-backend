@@ -24,7 +24,7 @@ export class FrutaController {
   async createFruta( @Body() frutaData: { nome: string, preco: Decimal, expiracao: number } ): Promise<Fruta> {
       const { nome, preco, expiracao } = frutaData;
       
-    //   this.frutaService.handleCron( id, expiracao );
+      this.frutaService.handleCron( nome, expiracao );
 
       return this.frutaService.createFruta({
           nome,

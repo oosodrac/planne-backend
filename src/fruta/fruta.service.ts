@@ -3,20 +3,25 @@ import { Injectable } from "@nestjs/common";
 import { Fruta } from "@prisma/client";
 import { PrismaService } from './../prisma.service';
 import { Prisma } from '@prisma/client';
-import { Cron, SchedulerRegistry } from "@nestjs/schedule";
+import { SchedulerRegistry } from "@nestjs/schedule";
 import { CronJob } from "cron";
-import { CronExpression } from '@nestjs/schedule';
+import { BaldeFrutaService } from "src/balde-fruta/balde-fruta.service";
+import { BaldeService } from './../balde/balde.service';
 
 @Injectable()
 export class FrutaService {
-    constructor(private prismaService: PrismaService, private schedulerRegistry: SchedulerRegistry) {}
+    constructor(
+        private prismaService: PrismaService,
+        private schedulerRegistry: SchedulerRegistry,
+        private baldeFrutaService: BaldeFrutaService,
+        private baldeService: BaldeService ) {}
 
     async getFrutas(): Promise<Fruta[]> {
         return this.prismaService.fruta.findMany();
     }
 
-    async getFruta(nome: Prisma.FrutaWhereUniqueInput): Promise<Fruta> {
-        return this.prismaService.fruta.findUnique( {
+    async getFruta(nome: Prisma.FrutaWhereInput): Promise<Fruta> {
+        return this.prismaService.fruta.findFirst( {
             where: nome
         } )
     }
@@ -40,28 +45,60 @@ export class FrutaService {
         return this.prismaService.fruta.delete( { where } )
     }
 
-    handleCron( name: string, seconds: number ) {
-        const job = new CronJob( `${seconds} * * * * *`, () => {
-            console.log(`time (${seconds}) for job ${name} to run!`);
+    handleCron( nome, expiracao ) {
+        const job = new CronJob( `${expiracao} * * * * *`, () => {
+
+            this.getFruta( { nome: nome } ).then( frutaResult => {
+                if ( frutaResult ) {
+
+                    this.deleteFruta( {
+                        id: frutaResult.id
+                    } ).then( (frutaEliminada) => {
+
+                    this.baldeFrutaService.getBaldeFrutas().then( baldeFrutas => {
+                        baldeFrutas.forEach( result => {
+                            if ( result.fruta === frutaEliminada.nome ) {
+                                const id = result.balde.concat(frutaEliminada.nome);
+                                this.baldeFrutaService.removeFrutaFromBalde( { id: id } ).then( baldeFrutaRemovido => {
+                                    // TODO: actualizar o resumo
+                                    this.baldeFrutaService.getResumoByBaldeName( baldeFrutaRemovido.balde ).then( resumoResult => {
+                                        const total = Number(resumoResult.total) - Number(frutaEliminada.preco);
+                                        const balde = baldeFrutaRemovido.balde;
+
+                                        this.baldeService.getBalde( {nome: balde } ).then( baldeResult => {
+                                            const ocupacao = Number(resumoResult.ocupacao) - Number((100 / baldeResult.capacidade ));
+                                                                    
+                                        this.baldeFrutaService.updateResumoBaldeFruta( {
+                                            where: { balde: balde },
+                                            data: {
+                                                total,
+                                                balde,
+                                                ocupacao
+                                            }
+                                        } );
+                                        } )
+
+
+
+                                    } )
+                                } );
+                            }
+                        } )
+                    } );
+                });
+
+                } else {
+                    this.schedulerRegistry.deleteCronJob( nome );
+                    console.log( `Tarefa ${nome} eliminada` );
+                }
+            } )
+
+            console.log(`time (${expiracao}) for job ${nome} to run!`);
         } )
 
-        this.schedulerRegistry.addCronJob( name, job );
+        this.schedulerRegistry.addCronJob( nome, job );
         job.start();
 
-        console.log( `job ${name} added for each minute at ${seconds} seconds!` );
+        console.log( `job ${nome} added for each minute at ${nome} seconds!` );
     }
-
-    // @Cron(CronExpression.EVERY_10_SECONDS)
-    // getCrons() {
-    //     const jobs = this.schedulerRegistry.getCronJobs();
-    //     jobs.forEach((value, key, map) => {
-    //       let next;
-    //       try {
-    //         next = value.nextDates().toDate();
-    //       } catch (e) {
-    //         next = 'error: next fire date is in the past!';
-    //       }
-    //       console.log(`job: ${value} -> next: ${next}`);
-    //     });
-    //   }
 }
