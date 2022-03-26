@@ -11,12 +11,14 @@ datasource db {
 }
 
 model Balde {
-  nome String @unique @id
+  id Int @id @default(autoincrement())
+  nome String @unique
   capacidade Int @default(0)
 }
 
 model Fruta {
-  nome String @unique @id
+  id Int @id @default(autoincrement())
+  nome String @unique
   preco Decimal @default(0)
   expiracao Int
 }
@@ -30,6 +32,6 @@ model BaldeFruta {
 
 model ResumoBalda {
   total Decimal @default(0)
-  ocupacao Int @default(0)
+  ocupacao Decimal @default(0)
   balde String @id @unique
 }
