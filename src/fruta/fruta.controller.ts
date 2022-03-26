@@ -13,16 +13,19 @@ export class FrutaController {
       return this.frutaService.getFrutas();
   }
 
-  @Get(':nome')
-  async getFruta(@Param('nome') nome: string): Promise<Fruta> {
+  @Get(':id')
+  async getFruta(@Param('id') id: string): Promise<Fruta> {
       return this.frutaService.getFruta( {
-          nome: nome
+          id: Number(id)
       } )
   }
 
   @Post()
   async createFruta( @Body() frutaData: { nome: string, preco: Decimal, expiracao: number } ): Promise<Fruta> {
       const { nome, preco, expiracao } = frutaData;
+      
+    //   this.frutaService.handleCron( id, expiracao );
+
       return this.frutaService.createFruta({
           nome,
           preco,
@@ -30,11 +33,11 @@ export class FrutaController {
       })
   }
   
-  @Put(':nome')
-  async updateFruta( @Param('nome') nome: string, @Body() frutaData: { preco: Decimal, expiracao: number } ): Promise<Fruta> {
-      const { preco, expiracao } = frutaData;
+  @Put(':id')
+  async updateFruta( @Param('id') id: string, @Body() frutaData: { nome: string, preco: Decimal, expiracao: number } ): Promise<Fruta> {
+      const { nome, preco, expiracao } = frutaData;
       return this.frutaService.updateFruta( {
-          where: { nome: nome },
+          where: { id: Number(id) },
           data: {
               nome,
               preco,
@@ -43,8 +46,8 @@ export class FrutaController {
       } )
   }
 
-  @Delete(':nome')
-  async deleteFruta(@Param('nome') nome: string ): Promise<Fruta> {
-      return this.frutaService.deleteFruta( { nome: nome } )
+  @Delete(':id')
+  async deleteFruta(@Param('id') id: string ): Promise<Fruta> {
+      return this.frutaService.deleteFruta( { id: Number(id) } )
   }
 }
