@@ -3,9 +3,10 @@ import { AppModule } from './app.module';
 import { PrismaService } from './prisma.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
+  app.enableCors();
   const prismaService: PrismaService = app.get(PrismaService);
   prismaService.$disconnect();
-  await app.listen(3000);
+  await app.listen(8080);
 }
 bootstrap();
