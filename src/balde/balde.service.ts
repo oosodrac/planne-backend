@@ -37,18 +37,9 @@ export class BaldeService {
   }
 
   async deleteBalde(where: Prisma.BaldeWhereUniqueInput): Promise<Balde> {
-      let result;
-    this.baldeFrutaService.getResumoByBaldeName( where.nome ).then( resumo => {
-        if ( Number(resumo.ocupacao) !== Number(0) ) {
-            throw new NotFoundException("O balde contem frutas");
-        } else {
-            result = this.prismaService.balde.delete({
-                where,
-            })
-        }
-    } )
-
-      return result;
+    return this.prismaService.balde.delete({
+        where,
+    });
   }
 
 

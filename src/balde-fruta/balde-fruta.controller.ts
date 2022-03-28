@@ -102,6 +102,11 @@ export class BaldeFrutaController {
         return this.baldeFrutaService.getResumoBaldeFruta();
     }
 
+    @Get('resumo/balde/:nome')
+    async getResumoBaldeFrutaByName(@Param('nome') nome: string): Promise<ResumoBalda> {
+        return this.baldeFrutaService.getResumoByBaldeName( nome );
+    }
+
     @Sse('sse-resumo')
     sse(): Observable<any> {
 
