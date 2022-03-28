@@ -3,39 +3,59 @@
 </p>
 
 ## Description
-
-[Nest](https://github.com/nestjs/nest) URI´s.
+ 
+URI´s.
 
 BALDES:
 
 (http://localhost:8080/api/v1/baldes) - (GET) Buscar todos os baldes
+<br/>
 (http://localhost:8080/api/v1/baldes/id) - (GET) Buscar balde pelo id
+<br/>
 (http://localhost:8080/api/v1/baldes/id) - (DELETE) Remover balde pelo id
+<br/>
 
-(http://localhost:8080/api/v1/baldes) - (POST) Add balde -> payload : { "nome": "nome-balde", "capacidade": 1 }
+(http://localhost:8080/api/v1/baldes) - (POST) Add balde -> payload : { "nome": "nome-balde", "capacidade": 1}
+<br/>
 (http://localhost:8080/api/v1/baldes/id) - (PUT) Update balde -> payload : { "nome": "nome-balde", "capacidade": 1 }
 
+<br/>
 FRUTAS:
 
+<br/>
 (http://localhost:8080/api/v1/frutas) - (GET) Buscar todos as frutas
+
+<br/>
 (http://localhost:8080/api/v1/frutas/id) - (GET) Buscar fruta pelo id
+
+<br/>
 (http://localhost:8080/api/v1/frutas/id) - (DELETE) Remover fruta pelo id
 
+<br/>
 (http://localhost:8080/api/v1/frutas) - (POST) Add fruta -> payload : { "nome": "nome-balde", "preco": 1, "expiracao": 1 }
+<br/>
 (http://localhost:8080/api/v1/frutas/id) - (PUT) Update fruta -> payload : { "nome": "nome-balde", "preco": 1, "expiracao": 1 }
 
+<br/>
 DEPOSITO DE FRUTA:
 
+<br/>
 (http://localhost:8080/api/v1/balde-frutas) - (GET) Buscar todos os depositos
+<br/>
 (http://localhost:8080/api/v1/balde-frutas/id) - (GET) Buscar deposito pelo id
+<br/>
 (http://localhost:8080/api/v1/balde-frutas/balde/fruta) - (DELETE) Remover deposito
 
 (http://localhost:8080/api/v1/balde-frutas) - (POST) Add deposito -> payload : { "balde": "", "fruta": "" }
+<br/>
 (http://localhost:8080/api/v1/balde-frutas/id) - (PUT) Update deposito -> payload : { "balde": "", "fruta":""}
 
+<br/>
 
 (http://localhost:8080/api/v1/balde-frutas/resumo) - (GET) Buscar estatistica dos baldes
+<br/>
 (http://localhost:8080/api/v1/balde-frutas/balde/nome) - (GET) Buscar estatistica pelo nome do balde
+<br/>
 (http://localhost:8080/api/v1/balde-frutas/sse-resumo) - (GET) Evento de estatistica
 
 ## Installation
