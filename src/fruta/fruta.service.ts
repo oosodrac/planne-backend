@@ -60,7 +60,7 @@ export class FrutaService {
                             if ( result.fruta === frutaEliminada.nome ) {
                                 const id = result.balde.concat(frutaEliminada.nome);
                                 this.baldeFrutaService.removeFrutaFromBalde( { id: id } ).then( baldeFrutaRemovido => {
-                                    // TODO: actualizar o resumo
+                                    // actualizar o resumo
                                     this.baldeFrutaService.getResumoByBaldeName( baldeFrutaRemovido.balde ).then( resumoResult => {
                                         const total = Number(resumoResult.total) - Number(frutaEliminada.preco);
                                         const balde = baldeFrutaRemovido.balde;
