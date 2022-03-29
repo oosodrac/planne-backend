@@ -58,30 +58,7 @@ export class FrutaService {
                     this.baldeFrutaService.getBaldeFrutas().then( baldeFrutas => {
                         baldeFrutas.forEach( result => {
                             if ( result.fruta === frutaEliminada.nome ) {
-                                const id = result.balde.concat(frutaEliminada.nome);
-                                this.baldeFrutaService.removeFrutaFromBalde( { id: id } ).then( baldeFrutaRemovido => {
-                                    // actualizar o resumo
-                                    this.baldeFrutaService.getResumoByBaldeName( baldeFrutaRemovido.balde ).then( resumoResult => {
-                                        const total = Number(resumoResult.total) - Number(frutaEliminada.preco);
-                                        const balde = baldeFrutaRemovido.balde;
-
-                                        this.baldeService.getBalde( {nome: balde } ).then( baldeResult => {
-                                            const ocupacao = Number(resumoResult.ocupacao) - Number((100 / baldeResult.capacidade ));
-                                                                    
-                                        this.baldeFrutaService.updateResumoBaldeFruta( {
-                                            where: { balde: balde },
-                                            data: {
-                                                total,
-                                                balde,
-                                                ocupacao
-                                            }
-                                        } );
-                                        } )
-
-
-
-                                    } )
-                                } );
+                                this.updateDeposito( result.balde, result.fruta, frutaResult.preco );
                             }
                         } )
                     } );
@@ -100,5 +77,36 @@ export class FrutaService {
         job.start();
 
         console.log( `job ${nome} added for each minute at ${nome} seconds!` );
+    }
+
+    updateDeposito(balde, fruta, precoFruta  ) {
+
+        
+
+        const id = balde.concat(fruta);
+        this.baldeFrutaService.removeFrutaFromBalde( { id: id } ).then( baldeFrutaRemovido => {
+            // actualizar o resumo
+            this.baldeFrutaService.getResumoByBaldeName( baldeFrutaRemovido.balde ).then( resumoResult => {
+                const total = Number(resumoResult.total) - Number(precoFruta);
+                const balde = baldeFrutaRemovido.balde;
+
+                this.baldeService.getBalde( {nome: balde } ).then( baldeResult => {
+                    const ocupacao = Number(resumoResult.ocupacao) - Number((100 / baldeResult.capacidade ));
+                                            
+                this.baldeFrutaService.updateResumoBaldeFruta( {
+                    where: { balde: balde },
+                    data: {
+                        total,
+                        balde,
+                        ocupacao
+                    }
+                } ).then( depositoRemovido => {
+                    if ( Number(depositoRemovido.ocupacao) === 0 ) {
+                        this.baldeFrutaService.removeResumo( { balde: balde } );
+                    }
+                } );
+                } )
+            } )
+        } );
     }
 }

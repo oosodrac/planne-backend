@@ -65,4 +65,10 @@ export class BaldeFrutaService {
             }
         );
     }
+    
+    async removeResumo( where: Prisma.ResumoBaldaWhereUniqueInput ): Promise<ResumoBalda> {
+        return this.prismaService.resumoBalda.delete( {
+            where: where
+        } )
+    }
 }

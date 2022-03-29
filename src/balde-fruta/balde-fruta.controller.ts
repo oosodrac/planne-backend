@@ -92,9 +92,10 @@ export class BaldeFrutaController {
     }
 
     @Delete(':balde/:fruta')
-    async deleteFrutaFromBalde(@Param('balde') balde: string, @Param('fruta') fruta: string): Promise<BaldeFruta> {
-        const id = balde.concat(fruta);
-        return this.baldeFrutaService.removeFrutaFromBalde({ id: id });
+    async deleteFrutaFromBalde(@Param('balde') balde: string, @Param('fruta') fruta: string): Promise<void> {
+        this.frutaService.getFruta( { nome: fruta } ).then( frutaResult => {
+            this.frutaService.updateDeposito( balde, fruta, frutaResult.preco );
+        } )
     }
 
     @Get('resumo')
