@@ -25,7 +25,7 @@ CREATE TABLE "BaldeFruta" (
 -- CreateTable
 CREATE TABLE "ResumoBalda" (
     "total" DECIMAL NOT NULL DEFAULT 0,
-    "ocupacao" INTEGER NOT NULL DEFAULT 0,
+    "ocupacao" DECIMAL NOT NULL DEFAULT 0,
     "balde" TEXT NOT NULL PRIMARY KEY
 );
 
