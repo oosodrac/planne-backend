@@ -7,6 +7,6 @@ async function bootstrap() {
   app.enableCors();
   const prismaService: PrismaService = app.get(PrismaService);
   prismaService.$disconnect();
-  await app.listen(8080);
+  await app.listen(process.env.PORT || 8080);
 }
 bootstrap();
